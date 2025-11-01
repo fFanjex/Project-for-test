@@ -1,0 +1,27 @@
+package org.example.projectfortest.controller;
+
+import lombok.RequiredArgsConstructor;
+import org.example.projectfortest.entity.Task;
+import org.example.projectfortest.service.TaskService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/task")
+@RequiredArgsConstructor
+public class TaskController {
+    private final TaskService taskService;
+
+    @PostMapping("/add")
+    public ResponseEntity<?> createTask(@RequestBody Task task) {
+        return ResponseEntity.ok(taskService.createTask(task));
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteTask(@PathVariable UUID id) {
+        taskService.deleteTask(id);
+        return ResponseEntity.ok().build();
+    }
+}

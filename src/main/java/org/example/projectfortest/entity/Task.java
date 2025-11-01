@@ -1,5 +1,6 @@
 package org.example.projectfortest.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -7,16 +8,18 @@ import lombok.Data;
 import org.example.projectfortest.entity.enums.Category;
 import org.example.projectfortest.entity.enums.Priority;
 import org.example.projectfortest.entity.enums.TaskStatus;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "tasks")
 @Data
 public class Task {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @UuidGenerator
+    private UUID id;
 
     @NotBlank
     @Size(max = 100)
@@ -32,7 +35,7 @@ public class Task {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Priority priority = Priority.MEDIUM;
+    private Priority priority;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -40,10 +43,11 @@ public class Task {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Category category = Category.PERSONAL;
+    private Category category;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference
     private User user;
 
     private LocalDateTime createdAt;
