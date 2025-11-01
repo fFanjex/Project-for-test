@@ -6,10 +6,7 @@ import org.example.projectfortest.dto.LoginRequest;
 import org.example.projectfortest.dto.RegisterRequest;
 import org.example.projectfortest.service.UserService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -29,5 +26,12 @@ public class AuthController {
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
         Map<String, String> tokens = userService.login(request.getEmail(), request.getPassword());
         return ResponseEntity.ok(tokens);
+    }
+
+    @PostMapping("/recovery")
+    public ResponseEntity<?> recoveryPassword(@RequestParam String email,
+                                              @RequestParam String password) {
+        userService.recoveryPassword(email, password);
+        return ResponseEntity.ok().build();
     }
 }

@@ -55,4 +55,13 @@ public class AuthControllerTest {
         verify(userService, times(1)).login(request.getEmail(),
                 request.getPassword());
     }
+
+    @Test
+    void recovery_ShouldReturnOkStatus() {
+        when(userService.recoveryPassword(anyString(), anyString()))
+                .thenReturn(Map.of("message", "Password updated successfully"));
+        ResponseEntity<?> response = authController.recoveryPassword("user@example.com", "newPass123");
+        assertThat(response.getStatusCode().value()).isEqualTo(200);
+        verify(userService).recoveryPassword("user@example.com", "newPass123");
+    }
 }

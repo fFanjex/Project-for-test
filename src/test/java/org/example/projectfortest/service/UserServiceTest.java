@@ -1,7 +1,6 @@
 package org.example.projectfortest.service;
 
 import org.example.projectfortest.config.JwtTokenProvider;
-import org.example.projectfortest.dto.LoginRequest;
 import org.example.projectfortest.dto.RegisterRequest;
 import org.example.projectfortest.entity.User;
 import org.example.projectfortest.repository.UserRepository;
@@ -17,6 +16,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 public class UserServiceTest {
@@ -103,5 +103,24 @@ public class UserServiceTest {
         assertThatThrownBy(() -> userService.login("test@mail.com", "wrongPass"))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("Invalid email or password");
+    }
+
+    @Test
+    void recoveryPassword_ShouldUpdatePassword_WhenUserExists() {
+        User user = User.builder().email("test@mail.ru").password("oldPassword").build();
+        when(userRepository.findByEmail("test@mail.ru")).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches("oldPassword", "encodedPassword")).thenReturn(true);
+        when(userRepository.save(any(User.class))).thenReturn(user);
+        Map<String, String> result = userService.recoveryPassword("test@mail.ru", "newPassword");
+        assertThat(result.get("message")).isEqualTo("Password updated successfully");
+        assertThat(result.get("email")).isEqualTo("test@mail.ru");
+        verify(userRepository).save(user);
+    }
+
+    @Test
+    void recoveryPassword_ShouldThrow_WhenUserNotFound() {
+        when(userRepository.findByEmail("no@mail.ru")).thenReturn(Optional.empty());
+        assertThrows(RuntimeException.class,
+                () -> userService.recoveryPassword("notfound@example.com", "newPass"));
     }
 }
