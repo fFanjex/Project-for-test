@@ -1,6 +1,7 @@
 package org.example.projectfortest.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.example.projectfortest.dto.UpdateTaskDTO;
 import org.example.projectfortest.entity.Task;
 import org.example.projectfortest.service.TaskService;
 import org.springframework.http.ResponseEntity;
@@ -23,5 +24,11 @@ public class TaskController {
     public ResponseEntity<?> deleteTask(@PathVariable UUID id) {
         taskService.deleteTask(id);
         return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/edit/{id}")
+    public ResponseEntity<?> updateTask(@PathVariable UUID id,
+                                        @RequestBody UpdateTaskDTO updateTaskDTO) {
+        return ResponseEntity.ok(taskService.updateTask(id, updateTaskDTO));
     }
 }

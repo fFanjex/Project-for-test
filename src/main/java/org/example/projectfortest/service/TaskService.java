@@ -1,6 +1,7 @@
 package org.example.projectfortest.service;
 
 import lombok.RequiredArgsConstructor;
+import org.example.projectfortest.dto.UpdateTaskDTO;
 import org.example.projectfortest.entity.Task;
 import org.example.projectfortest.entity.User;
 import org.example.projectfortest.repository.TaskRepository;
@@ -24,13 +25,25 @@ public class TaskService {
     }
 
     public void deleteTask(UUID taskId) {
-        User cuurentUser = getCurrentUser();
+        User currentUser = getCurrentUser();
         Task task = taskRepository.findById(taskId).orElseThrow(() ->
                 new RuntimeException("Task not found"));
-        if (!task.getUser().equals(cuurentUser)) {
+        if (!task.getUser().equals(currentUser)) {
             throw new RuntimeException("You are not allowed to delete this task");
         }
         taskRepository.delete(task);
+    }
+
+    public Task updateTask(UUID taskId, UpdateTaskDTO updateTaskDTO) {
+        Task task = taskRepository.findById(taskId).orElseThrow(
+                () -> new RuntimeException("Task not found")
+        );
+        task.setTitle(updateTaskDTO.getTitle());
+        task.setDescription(updateTaskDTO.getDescription());
+        task.setDueDate(updateTaskDTO.getDueDate());
+        task.setPriority(updateTaskDTO.getPriority());
+        task.setCategory(updateTaskDTO.getCategory());
+        return taskRepository.save(task);
     }
 
     private User getCurrentUser() {

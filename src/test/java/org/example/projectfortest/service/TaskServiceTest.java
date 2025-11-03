@@ -1,5 +1,6 @@
 package org.example.projectfortest.service;
 
+import org.example.projectfortest.dto.UpdateTaskDTO;
 import org.example.projectfortest.entity.Task;
 import org.example.projectfortest.entity.User;
 import org.example.projectfortest.repository.TaskRepository;
@@ -13,6 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -87,5 +89,37 @@ class TaskServiceTest {
         when(taskRepository.findById(taskId)).thenReturn(Optional.empty());
         RuntimeException exception = assertThrows(RuntimeException.class, () -> taskService.deleteTask(taskId));
         assertEquals("Task not found", exception.getMessage());
+    }
+
+    @Test
+    void updateTask_shouldUpdateFieldsAndSave() {
+        UpdateTaskDTO updateTaskDTO = new UpdateTaskDTO(
+                "New title",
+                "New description",
+                LocalDateTime.now().plusDays(3),
+                org.example.projectfortest.entity.enums.Priority.HIGH,
+                org.example.projectfortest.entity.enums.Category.WORK
+        );
+        when(taskRepository.findById(taskId)).thenReturn(Optional.of(task));
+        when(taskRepository.save(any(Task.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        Task updatedTask = taskService.updateTask(taskId, updateTaskDTO);
+        assertEquals(updateTaskDTO.getTitle(), updatedTask.getTitle());
+        assertEquals(updateTaskDTO.getDescription(), updatedTask.getDescription());
+        assertEquals(updateTaskDTO.getDueDate(), updatedTask.getDueDate());
+        assertEquals(updateTaskDTO.getPriority(), updatedTask.getPriority());
+        assertEquals(updateTaskDTO.getCategory(), updatedTask.getCategory());
+        verify(taskRepository, times(1)).findById(taskId);
+        verify(taskRepository, times(1)).save(task);
+    }
+
+    @Test
+    void updateTask_shouldThrowIfTaskNotFound() {
+        when(taskRepository.findById(taskId)).thenReturn(Optional.empty());
+
+        RuntimeException exception = assertThrows(RuntimeException.class,
+                () -> taskService.updateTask(taskId, new UpdateTaskDTO("t", "d", null, null, null)));
+
+        assertEquals("Task not found", exception.getMessage());
+        verify(taskRepository, never()).save(any());
     }
 }

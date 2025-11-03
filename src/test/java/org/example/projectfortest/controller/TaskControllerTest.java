@@ -1,5 +1,6 @@
 package org.example.projectfortest.controller;
 
+import org.example.projectfortest.dto.UpdateTaskDTO;
 import org.example.projectfortest.entity.Task;
 import org.example.projectfortest.service.TaskService;
 import org.junit.jupiter.api.BeforeEach;
@@ -52,5 +53,26 @@ public class TaskControllerTest {
 
         assertThat(response.getStatusCodeValue()).isEqualTo(200);
         verify(taskService, times(1)).deleteTask(taskId);
+    }
+
+    @Test
+    void updateTask_shouldReturnOkWithUpdatedTask() {
+        UUID taskId = UUID.randomUUID();
+        UpdateTaskDTO updateTaskDTO = new UpdateTaskDTO(
+                "Updated title",
+                "Updated description",
+                null,
+                null,
+                null
+        );
+        Task updatedTask = new Task();
+        updatedTask.setId(taskId);
+        updatedTask.setTitle(updateTaskDTO.getTitle());
+        updatedTask.setDescription(updateTaskDTO.getDescription());
+        when(taskService.updateTask(taskId, updateTaskDTO)).thenReturn(updatedTask);
+        ResponseEntity<?> response = taskController.updateTask(taskId, updateTaskDTO);
+        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+        assertThat(response.getBody()).isEqualTo(updatedTask);
+        verify(taskService, times(1)).updateTask(taskId, updateTaskDTO);
     }
 }
