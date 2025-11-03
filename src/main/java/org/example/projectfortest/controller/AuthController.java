@@ -3,6 +3,7 @@ package org.example.projectfortest.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.projectfortest.dto.LoginRequest;
+import org.example.projectfortest.dto.RecoveryPasswordDTO;
 import org.example.projectfortest.dto.RegisterRequest;
 import org.example.projectfortest.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -29,9 +30,8 @@ public class AuthController {
     }
 
     @PostMapping("/recovery")
-    public ResponseEntity<?> recoveryPassword(@RequestParam String email,
-                                              @RequestParam String password) {
-        userService.recoveryPassword(email, password);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<?> recoveryPassword(@RequestBody RecoveryPasswordDTO recoveryPasswordDTO) {
+        return ResponseEntity.ok(userService.recoveryPassword(recoveryPasswordDTO.getEmail(),
+                recoveryPasswordDTO.getPassword()));
     }
 }

@@ -1,6 +1,7 @@
 package org.example.projectfortest.controller;
 
 import org.example.projectfortest.dto.LoginRequest;
+import org.example.projectfortest.dto.RecoveryPasswordDTO;
 import org.example.projectfortest.dto.RegisterRequest;
 import org.example.projectfortest.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -58,10 +60,16 @@ public class AuthControllerTest {
 
     @Test
     void recovery_ShouldReturnOkStatus() {
-        when(userService.recoveryPassword(anyString(), anyString()))
-                .thenReturn(Map.of("message", "Password updated successfully"));
-        ResponseEntity<?> response = authController.recoveryPassword("user@example.com", "newPass123");
-        assertThat(response.getStatusCode().value()).isEqualTo(200);
-        verify(userService).recoveryPassword("user@example.com", "newPass123");
+        RecoveryPasswordDTO recoveryPasswordDTO = new RecoveryPasswordDTO("user@example.com", "12345678");
+        Map<String, String> expectedResponse = Map.of(
+                "message", "Password updated successfully",
+                "email", "user@example.com"
+        );
+        when(userService.recoveryPassword("user@example.com", "12345678"))
+                .thenReturn(expectedResponse);
+        ResponseEntity<?> response = authController.recoveryPassword(recoveryPasswordDTO);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo(expectedResponse);
+        verify(userService).recoveryPassword("user@example.com", "12345678");
     }
 }

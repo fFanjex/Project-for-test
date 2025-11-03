@@ -46,7 +46,6 @@ public class TaskControllerTest {
     void deleteTask_shouldReturnOk() {
         UUID taskId = UUID.randomUUID();
 
-        // просто проверяем вызов сервиса, ничего не возвращаем
         doNothing().when(taskService).deleteTask(taskId);
 
         ResponseEntity<?> response = taskController.deleteTask(taskId);

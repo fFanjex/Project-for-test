@@ -1,7 +1,6 @@
 package org.example.projectfortest.service;
 
 import lombok.RequiredArgsConstructor;
-import org.example.projectfortest.config.JwtTokenProvider;
 import org.example.projectfortest.entity.Task;
 import org.example.projectfortest.entity.User;
 import org.example.projectfortest.repository.TaskRepository;
@@ -17,7 +16,6 @@ import java.util.UUID;
 public class TaskService {
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
-    private final JwtTokenProvider jwtTokenProvider;
 
     public Task createTask(Task task) {
         User currentUser = getCurrentUser();

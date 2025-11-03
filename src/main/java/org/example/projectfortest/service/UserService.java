@@ -58,11 +58,13 @@ public class UserService {
     }
 
     public Map<String, String> recoveryPassword(String email, String newPassword) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("There is no user with this email"));
-
-        user.setPassword(passwordEncoder.encode(newPassword));
-        userRepository.save(user);
+        if (userRepository.findByEmail(email).isEmpty()) {
+            throw new RuntimeException("Email is empty");
+        } else {
+            User user = userRepository.findByEmail(email).get();
+            user.setPassword(passwordEncoder.encode(newPassword));
+            userRepository.save(user);
+        }
         return Map.of(
                 "message", "Password updated successfully",
                 "email", email
