@@ -75,4 +75,22 @@ public class TaskControllerTest {
         assertThat(response.getBody()).isEqualTo(updatedTask);
         verify(taskService, times(1)).updateTask(taskId, updateTaskDTO);
     }
+
+    @Test
+    void doneTask_shouldReturnOkAndCallService() {
+        UUID taskId = UUID.randomUUID();
+        doNothing().when(taskService).updateTaskStatusToDone(taskId);
+        ResponseEntity<Void> response = taskController.doneTask(taskId);
+        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+        verify(taskService, times(1)).updateTaskStatusToDone(taskId);
+    }
+
+    @Test
+    void inProgressTask_shouldReturnOkAndCallService() {
+        UUID taskId = UUID.randomUUID();
+        doNothing().when(taskService).updateTaskStatusToInProgress(taskId);
+        ResponseEntity<Void> response = taskController.inProgressTask(taskId);
+        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+        verify(taskService, times(1)).updateTaskStatusToInProgress(taskId);
+    }
 }

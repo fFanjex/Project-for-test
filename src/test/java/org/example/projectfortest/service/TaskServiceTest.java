@@ -115,11 +115,43 @@ class TaskServiceTest {
     @Test
     void updateTask_shouldThrowIfTaskNotFound() {
         when(taskRepository.findById(taskId)).thenReturn(Optional.empty());
-
         RuntimeException exception = assertThrows(RuntimeException.class,
                 () -> taskService.updateTask(taskId, new UpdateTaskDTO("t", "d", null, null, null)));
-
         assertEquals("Task not found", exception.getMessage());
+        verify(taskRepository, never()).save(any());
+    }
+
+    @Test
+    void updateTaskStatusToDone_shouldSetStatusAndSave() {
+        task.setStatus(org.example.projectfortest.entity.enums.TaskStatus.CREATED);
+        when(taskRepository.findById(taskId)).thenReturn(Optional.of(task));
+        when(taskRepository.save(any(Task.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        taskService.updateTaskStatusToDone(taskId);
+        assertEquals(org.example.projectfortest.entity.enums.TaskStatus.DONE, task.getStatus());
+        verify(taskRepository, times(1)).findById(taskId);
+        verify(taskRepository, times(1)).save(task);
+    }
+
+    @Test
+    void updateTaskStatusToInProgress_shouldSetStatusAndSave() {
+        task.setStatus(org.example.projectfortest.entity.enums.TaskStatus.CREATED);
+        when(taskRepository.findById(taskId)).thenReturn(Optional.of(task));
+        when(taskRepository.save(any(Task.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        taskService.updateTaskStatusToInProgress(taskId);
+        assertEquals(org.example.projectfortest.entity.enums.TaskStatus.IN_PROGRESS, task.getStatus());
+        verify(taskRepository, times(1)).findById(taskId);
+        verify(taskRepository, times(1)).save(task);
+    }
+
+    @Test
+    void updateTaskStatus_shouldThrowIfTaskNotFound() {
+        when(taskRepository.findById(taskId)).thenReturn(Optional.empty());
+        RuntimeException exception1 = assertThrows(RuntimeException.class,
+                () -> taskService.updateTaskStatusToDone(taskId));
+        assertEquals("Task not found", exception1.getMessage());
+        RuntimeException exception2 = assertThrows(RuntimeException.class,
+                () -> taskService.updateTaskStatusToInProgress(taskId));
+        assertEquals("Task not found", exception2.getMessage());
         verify(taskRepository, never()).save(any());
     }
 }

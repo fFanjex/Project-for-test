@@ -31,4 +31,16 @@ public class TaskController {
                                         @RequestBody UpdateTaskDTO updateTaskDTO) {
         return ResponseEntity.ok(taskService.updateTask(id, updateTaskDTO));
     }
+
+    @PostMapping("/in_progress/{id}")
+    public ResponseEntity<Void> inProgressTask(@PathVariable UUID id) {
+        taskService.updateTaskStatusToInProgress(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/done/{id}")
+    public ResponseEntity<Void> doneTask(@PathVariable UUID id) {
+        taskService.updateTaskStatusToDone(id);
+        return ResponseEntity.ok().build();
+    }
 }

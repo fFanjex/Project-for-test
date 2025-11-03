@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.projectfortest.dto.UpdateTaskDTO;
 import org.example.projectfortest.entity.Task;
 import org.example.projectfortest.entity.User;
+import org.example.projectfortest.entity.enums.TaskStatus;
 import org.example.projectfortest.repository.TaskRepository;
 import org.example.projectfortest.repository.UserRepository;
 import org.springframework.security.core.Authentication;
@@ -44,6 +45,22 @@ public class TaskService {
         task.setPriority(updateTaskDTO.getPriority());
         task.setCategory(updateTaskDTO.getCategory());
         return taskRepository.save(task);
+    }
+
+    public void updateTaskStatusToInProgress(UUID taskId) {
+        Task task = taskRepository.findById(taskId).orElseThrow(
+                () -> new RuntimeException("Task not found")
+        );
+        task.setStatus(TaskStatus.IN_PROGRESS);
+        taskRepository.save(task);
+    }
+
+    public void updateTaskStatusToDone(UUID taskId) {
+        Task task = taskRepository.findById(taskId).orElseThrow(
+                () -> new RuntimeException("Task not found")
+        );
+        task.setStatus(TaskStatus.DONE);
+        taskRepository.save(task);
     }
 
     private User getCurrentUser() {
