@@ -2,9 +2,18 @@ const formTitle = document.getElementById("form-title");
 const switchText = document.getElementById("switch-text");
 const submitBtn = document.getElementById("submit-btn");
 const messageBox = document.getElementById("message");
+const togglePassword = document.getElementById("togglePassword");
+const passwordInput = document.getElementById("password");
+const recoveryLink = document.getElementById("recovery-link");
 
 let isLogin = true;
 let isRecovery = false;
+
+togglePassword.addEventListener("click", () => {
+    const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
+    passwordInput.setAttribute("type", type);
+    togglePassword.textContent = type === "password" ? "👁️" : "🙈";
+});
 
 switchText.addEventListener("click", () => {
     if (!isRecovery) {
@@ -16,21 +25,15 @@ switchText.addEventListener("click", () => {
     }
 });
 
-const recoveryLink = document.createElement("span");
-recoveryLink.textContent = "Забыли пароль?";
-recoveryLink.style.display = "block";
-recoveryLink.style.marginTop = "10px";
-recoveryLink.style.cursor = "pointer";
-recoveryLink.style.color = "#ff0";
 recoveryLink.addEventListener("click", () => {
     isRecovery = true;
     formTitle.textContent = "Восстановление пароля";
     submitBtn.textContent = "Сменить пароль";
     switchText.style.display = "none";
+    recoveryLink.style.display = "none";
     messageBox.textContent = "";
-    document.getElementById("password").placeholder = "Новый пароль";
+    passwordInput.placeholder = "Новый пароль";
 });
-document.getElementById("auth-container").appendChild(recoveryLink);
 
 async function sendRequest(url, data) {
     try {
@@ -39,12 +42,7 @@ async function sendRequest(url, data) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data)
         });
-
-        if (!response.ok) {
-            const errText = await response.text();
-            throw new Error(errText || "Ошибка сервера");
-        }
-
+        if (!response.ok) throw new Error(await response.text() || "Ошибка сервера");
         return await response.json();
     } catch (err) {
         throw new Error(err.message);
@@ -57,7 +55,7 @@ submitBtn.addEventListener("click", async (e) => {
     messageBox.classList.remove("success");
 
     const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value.trim();
+    const password = passwordInput.value.trim();
 
     if (!email || !password) {
         messageBox.textContent = "Заполните все поля";
@@ -74,7 +72,8 @@ submitBtn.addEventListener("click", async (e) => {
                 formTitle.textContent = "Вход";
                 submitBtn.textContent = "Войти";
                 switchText.style.display = "inline";
-                document.getElementById("password").placeholder = "Пароль";
+                recoveryLink.style.display = "block";
+                passwordInput.placeholder = "Пароль";
             }, 1500);
         } else if (isLogin) {
             const res = await sendRequest("/api/auth/login", { email, password });

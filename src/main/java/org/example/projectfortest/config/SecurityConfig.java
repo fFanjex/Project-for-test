@@ -28,6 +28,11 @@ public class SecurityConfig {
                         .requestMatchers("/auth", "/auth.html", "/").permitAll()
                         .anyRequest().authenticated()
                 )
+                .formLogin(form -> form
+                        .loginPage("/auth")
+                        .permitAll()
+                )
+                .logout(logout -> logout.permitAll())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
 

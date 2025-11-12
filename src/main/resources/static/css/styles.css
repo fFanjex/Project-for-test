@@ -2,58 +2,48 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Orbitron', sans-serif;
+    font-family: 'Poppins', sans-serif;
 }
 
 html, body {
     width: 100%;
     height: 100%;
     overflow: hidden;
-    background: #0d0d0d;
+    background: linear-gradient(135deg, #f2e9e1, #e8d8c3, #f7eee5);
     display: flex;
     justify-content: center;
     align-items: center;
     position: relative;
 }
 
-canvas#bgCanvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-}
-
 .container {
     width: 400px;
-    padding: 50px 30px;
-    background: rgba(0,0,0,0.25);
+    padding: 50px 35px;
+    background: rgba(255, 255, 255, 0.4);
     border-radius: 20px;
-    backdrop-filter: blur(15px);
-    box-shadow: 0 0 20px #00ffff, 0 0 40px #ff00ff, 0 0 60px #0ff;
-    border: 2px solid #0ff;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 0 20px rgba(136, 99, 55, 0.3), 0 0 60px rgba(255, 215, 160, 0.2);
+    border: 1px solid rgba(255, 215, 160, 0.5);
     text-align: center;
-    color: #fff;
-    animation: fadeIn 1s ease forwards, pulse 3s ease-in-out infinite;
-    z-index: 10;
+    color: #4a3f35;
+    animation: fadeIn 1.2s ease forwards, glowPulse 5s ease-in-out infinite;
 }
 
 @keyframes fadeIn {
-    from {opacity: 0; transform: translateY(-50px);}
+    from {opacity: 0; transform: translateY(-40px);}
     to {opacity: 1; transform: translateY(0);}
 }
 
-@keyframes pulse {
-    0%, 100% { box-shadow: 0 0 20px #0ff, 0 0 40px #ff00ff, 0 0 60px #0ff; }
-    50% { box-shadow: 0 0 30px #ff0, 0 0 50px #ff00ff, 0 0 70px #0ff; }
+@keyframes glowPulse {
+    0%, 100% { box-shadow: 0 0 25px rgba(255, 215, 160, 0.4); }
+    50% { box-shadow: 0 0 40px rgba(136, 99, 55, 0.35); }
 }
 
 h2 {
     margin-bottom: 30px;
-    font-size: 36px;
-    color: #0ff;
-    text-shadow: 0 0 15px #0ff, 0 0 30px #f0f, 0 0 60px #0ff;
+    font-size: 32px;
+    color: #6b4f2f;
+    text-shadow: 0 0 10px rgba(255, 240, 220, 0.8);
 }
 
 .input-group {
@@ -63,84 +53,119 @@ h2 {
 
 input {
     width: 100%;
-    padding: 15px;
+    padding: 14px 45px 14px 15px;
     border-radius: 12px;
-    border: 2px solid #0ff;
+    border: 2px solid rgba(139, 108, 66, 0.3);
     font-size: 16px;
-    background: rgba(0,0,0,0.4);
-    color: #fff;
+    background: rgba(255, 255, 255, 0.6);
+    color: #3e2f1f;
     outline: none;
-    box-shadow: 0 0 10px #0ff;
-    transition: 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 input::placeholder {
-    color: #ccc;
-    opacity: 0.7;
+    color: rgba(90, 70, 50, 0.6);
 }
 
 input:focus {
-    border-color: #ff00ff;
-    box-shadow: 0 0 20px #ff00ff, 0 0 40px #0ff, 0 0 60px #f0f;
+    border-color: #b88a44;
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 15px rgba(184, 138, 68, 0.5);
+}
+
+.toggle-password {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 20px;
+    color: #b88a44;
+    transition: 0.3s ease;
+}
+
+.toggle-password:hover {
+    color: #8b6c42;
 }
 
 button {
     width: 100%;
     padding: 15px;
     border-radius: 12px;
-    border: 2px solid #0ff;
+    border: none;
     font-size: 18px;
-    font-weight: bold;
+    font-weight: 600;
     cursor: pointer;
     color: #fff;
-    background: linear-gradient(45deg, #0ff, #ff0, #f0f, #0ff);
-    background-size: 400% 400%;
-    animation: btnGradient 5s ease infinite, btnGlow 2s ease-in-out infinite;
-    box-shadow: 0 0 20px #0ff, 0 0 40px #f0f;
-    text-transform: uppercase;
-    transition: 0.3s ease;
+    background: linear-gradient(45deg, #b88a44, #d1a866, #f7d9a0);
+    background-size: 300% 300%;
+    animation: gradientFlow 6s ease infinite;
+    box-shadow: 0 4px 20px rgba(139, 108, 66, 0.4);
+    transition: all 0.3s ease;
 }
 
-@keyframes btnGradient {
+@keyframes gradientFlow {
     0% {background-position: 0% 50%;}
     50% {background-position: 100% 50%;}
     100% {background-position: 0% 50%;}
 }
 
-@keyframes btnGlow {
-    0%, 100% { box-shadow: 0 0 20px #0ff, 0 0 40px #f0f; }
-    50% { box-shadow: 0 0 30px #ff0, 0 0 50px #ff00ff, 0 0 70px #0ff; }
-}
-
 button:hover {
     transform: scale(1.05);
-    box-shadow: 0 0 50px #ff0, 0 0 80px #0ff, 0 0 100px #f0f;
+    box-shadow: 0 6px 25px rgba(184, 138, 68, 0.6);
 }
 
 .switch {
     margin-top: 20px;
     font-size: 14px;
-    color: #0ff;
+    color: #6b4f2f;
 }
 
 .switch span {
     cursor: pointer;
     font-weight: 600;
     text-decoration: underline;
-    transition: 0.3s ease;
+    transition: color 0.3s ease;
 }
 
 .switch span:hover {
-    color: #ff0;
+    color: #b88a44;
 }
 
 .message {
     margin-top: 15px;
     font-size: 14px;
     min-height: 20px;
-    color: #ff0;
+    color: #b88a44;
 }
 
 .message.success {
-    color: #0f0;
+    color: #3c7a3c;
+}
+
+canvas#bgCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    opacity: 0.2;
+}
+
+.recovery {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #b87a3e;
+    text-align: center;
+}
+
+.recovery span {
+    cursor: pointer;
+    text-decoration: underline;
+    transition: 0.3s ease;
+}
+
+.recovery span:hover {
+    color: #a6632b;
 }

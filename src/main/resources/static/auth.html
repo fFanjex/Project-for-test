@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Авторизация TRON</title>
+  <title>Авторизация</title>
   <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
@@ -18,12 +18,17 @@
 
   <div class="input-group">
     <input type="password" id="password" placeholder="Пароль" required>
+    <span id="togglePassword" class="toggle-password">👁️</span>
   </div>
 
   <button id="submit-btn">Войти</button>
 
   <div class="switch">
     <span id="switch-text">У меня нет аккаунта</span>
+  </div>
+
+  <div class="recovery">
+    <span id="recovery-link">Забыли пароль?</span>
   </div>
 
   <div class="message" id="message"></div>
