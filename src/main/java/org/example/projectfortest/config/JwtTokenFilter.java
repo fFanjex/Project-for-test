@@ -21,17 +21,23 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+                                    FilterChain filterChain)
+            throws ServletException, IOException {
+
         String path = request.getRequestURI();
-        if (path.startsWith("/api/auth/") || path.equals("/")) {
+        if (path.startsWith("/api/auth/")
+                || path.startsWith("/css/")
+                || path.startsWith("/js/")
+                || path.startsWith("/images/")
+                || path.equals("/")
+                || path.equals("/auth")
+                || path.equals("/auth.html")) {
             filterChain.doFilter(request, response);
             return;
         }
-
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
-
             if (jwtTokenProvider.isValidToken(token)) {
                 var authentication = jwtTokenProvider.getAuthentication(token);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -45,6 +51,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             response.getWriter().write("Missing Authorization header");
             return;
         }
+
         filterChain.doFilter(request, response);
     }
 }

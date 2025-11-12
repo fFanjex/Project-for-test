@@ -32,25 +32,18 @@ public class TaskControllerTest {
     void createTask_shouldReturnOkWithTask() {
         Task task = new Task();
         task.setTitle("Test Task");
-
         when(taskService.createTask(task)).thenReturn(task);
-
         ResponseEntity<?> response = taskController.createTask(task);
-
         assertThat(response.getStatusCodeValue()).isEqualTo(200);
         assertThat(response.getBody()).isEqualTo(task);
-
         verify(taskService, times(1)).createTask(task);
     }
 
     @Test
     void deleteTask_shouldReturnOk() {
         UUID taskId = UUID.randomUUID();
-
         doNothing().when(taskService).deleteTask(taskId);
-
         ResponseEntity<?> response = taskController.deleteTask(taskId);
-
         assertThat(response.getStatusCodeValue()).isEqualTo(200);
         verify(taskService, times(1)).deleteTask(taskId);
     }
