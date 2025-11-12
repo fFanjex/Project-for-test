@@ -4,16 +4,33 @@ const submitBtn = document.getElementById("submit-btn");
 const messageBox = document.getElementById("message");
 
 let isLogin = true;
+let isRecovery = false;
 
 switchText.addEventListener("click", () => {
-    isLogin = !isLogin;
-    formTitle.textContent = isLogin ? "Вход" : "Регистрация";
-    submitBtn.textContent = isLogin ? "Войти" : "Зарегистрироваться";
-    switchText.textContent = isLogin
-        ? "У меня нет аккаунта"
-        : "У меня уже есть аккаунт";
-    messageBox.textContent = "";
+    if (!isRecovery) {
+        isLogin = !isLogin;
+        formTitle.textContent = isLogin ? "Вход" : "Регистрация";
+        submitBtn.textContent = isLogin ? "Войти" : "Зарегистрироваться";
+        switchText.textContent = isLogin ? "У меня нет аккаунта" : "У меня уже есть аккаунт";
+        messageBox.textContent = "";
+    }
 });
+
+const recoveryLink = document.createElement("span");
+recoveryLink.textContent = "Забыли пароль?";
+recoveryLink.style.display = "block";
+recoveryLink.style.marginTop = "10px";
+recoveryLink.style.cursor = "pointer";
+recoveryLink.style.color = "#ff0";
+recoveryLink.addEventListener("click", () => {
+    isRecovery = true;
+    formTitle.textContent = "Восстановление пароля";
+    submitBtn.textContent = "Сменить пароль";
+    switchText.style.display = "none";
+    messageBox.textContent = "";
+    document.getElementById("password").placeholder = "Новый пароль";
+});
+document.getElementById("auth-container").appendChild(recoveryLink);
 
 async function sendRequest(url, data) {
     try {
@@ -48,7 +65,18 @@ submitBtn.addEventListener("click", async (e) => {
     }
 
     try {
-        if (isLogin) {
+        if (isRecovery) {
+            const res = await sendRequest("/api/auth/recovery", { email, password });
+            messageBox.textContent = res.message || "Пароль успешно обновлён!";
+            messageBox.classList.add("success");
+            setTimeout(() => {
+                isRecovery = false;
+                formTitle.textContent = "Вход";
+                submitBtn.textContent = "Войти";
+                switchText.style.display = "inline";
+                document.getElementById("password").placeholder = "Пароль";
+            }, 1500);
+        } else if (isLogin) {
             const res = await sendRequest("/api/auth/login", { email, password });
             localStorage.setItem("accessToken", res.accessToken);
             localStorage.setItem("refreshToken", res.refreshToken);
