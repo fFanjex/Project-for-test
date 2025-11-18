@@ -43,4 +43,9 @@ public class TaskController {
         taskService.updateTaskStatusToDone(id);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllTasks() {
+        return ResponseEntity.ok(taskService.getAllTasks());
+    }
 }

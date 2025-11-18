@@ -81,7 +81,7 @@ submitBtn.addEventListener("click", async (e) => {
             localStorage.setItem("refreshToken", res.refreshToken);
             messageBox.textContent = "Вы успешно вошли!";
             messageBox.classList.add("success");
-            setTimeout(() => window.location.href = "/", 1000);
+            setTimeout(() => window.location.href = "/tasks.html", 1000);
         } else {
             const res = await sendRequest("/api/auth/register", { email, password });
             messageBox.textContent = "Регистрация успешна! Теперь войдите.";

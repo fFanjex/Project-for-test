@@ -15,9 +15,11 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -153,5 +155,22 @@ class TaskServiceTest {
                 () -> taskService.updateTaskStatusToInProgress(taskId));
         assertEquals("Task not found", exception2.getMessage());
         verify(taskRepository, never()).save(any());
+    }
+
+    @Test
+    void getAllTasks_shouldReturnTasksForCurrentUser() {
+        Task task1 = new Task();
+        task1.setUser(user);
+        Task task2 = new Task();
+        task2.setUser(user);
+
+        when(taskRepository.findByUser(user)).thenReturn(List.of(task1, task2));
+
+        List<Task> tasks = taskService.getAllTasks();
+
+        assertThat(tasks).hasSize(2);
+        assertThat(tasks).contains(task1, task2);
+
+        verify(taskRepository, times(1)).findByUser(user);
     }
 }

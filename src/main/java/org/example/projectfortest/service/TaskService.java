@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -61,6 +62,11 @@ public class TaskService {
         );
         task.setStatus(TaskStatus.DONE);
         taskRepository.save(task);
+    }
+
+    public List<Task> getAllTasks() {
+        User currentUser = getCurrentUser();
+        return taskRepository.findByUser(currentUser);
     }
 
     private User getCurrentUser() {
