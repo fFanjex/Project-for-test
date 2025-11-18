@@ -1,6 +1,5 @@
 package org.example.projectfortest.service;
 
-import lombok.RequiredArgsConstructor;
 import org.example.projectfortest.config.JwtTokenProvider;
 import org.example.projectfortest.dto.RegisterRequest;
 import org.example.projectfortest.entity.User;
@@ -8,66 +7,60 @@ import org.example.projectfortest.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Service
-@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public Map<String, Object> register(RegisterRequest request) {
-        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new RuntimeException("Email is already in use");
-        }
-
-        User user = User.builder()
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .build();
-
-        User savedUser = userRepository.save(user);
-
-        String accessToken = jwtTokenProvider.generateAccessToken(savedUser);
-        String refreshToken = jwtTokenProvider.generateRefreshToken(savedUser);
-
-        return Map.of(
-                "user", savedUser,
-                "accessToken", accessToken,
-                "refreshToken", refreshToken
-        );
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    public Map<String, String> login(String email, String rawPassword) {
+    public Map<String, Object> register(RegisterRequest request) {
+        userRepository.findByEmail(request.getEmail())
+                .ifPresent(u -> { throw new RuntimeException("Email is already in use"); });
+
+        String encoded = passwordEncoder.encode(request.getPassword());
+        User user = User.builder().email(request.getEmail()).password(encoded).build();
+        User saved = userRepository.save(user);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("user", saved);
+        result.put("accessToken", jwtTokenProvider.generateAccessToken(saved));
+        result.put("refreshToken", jwtTokenProvider.generateRefreshToken(saved));
+        return result;
+    }
+
+    public Map<String, String> login(String email, String password) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Invalid email or password"));
 
-        if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
+        if (!passwordEncoder.matches(password, user.getPassword()))
             throw new RuntimeException("Invalid email or password");
-        }
 
-        String accessToken = jwtTokenProvider.generateAccessToken(user);
-        String refreshToken = jwtTokenProvider.generateRefreshToken(user);
-
-        return Map.of(
-                "accessToken", accessToken,
-                "refreshToken", refreshToken
-        );
+        Map<String, String> tokens = new HashMap<>();
+        tokens.put("accessToken", jwtTokenProvider.generateAccessToken(user));
+        tokens.put("refreshToken", jwtTokenProvider.generateRefreshToken(user));
+        return tokens;
     }
 
     public Map<String, String> recoveryPassword(String email, String newPassword) {
-        if (userRepository.findByEmail(email).isEmpty()) {
-            throw new RuntimeException("Email is empty");
-        } else {
-            User user = userRepository.findByEmail(email).get();
-            user.setPassword(passwordEncoder.encode(newPassword));
-            userRepository.save(user);
-        }
-        return Map.of(
-                "message", "Password updated successfully",
-                "email", email
-        );
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Email is empty"));
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        Map<String, String> result = new HashMap<>();
+        result.put("message", "Password updated successfully");
+        result.put("email", user.getEmail());
+        return result;
     }
 }
