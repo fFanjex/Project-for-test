@@ -31,6 +31,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 || path.startsWith("/images/")
                 || path.equals("/")
                 || path.equals("/auth")
+                || path.equals("/tasks")
+                || path.equals("/tasks.html")
                 || path.equals("/auth.html")) {
             filterChain.doFilter(request, response);
             return;

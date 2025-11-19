@@ -10,4 +10,9 @@ public class AuthPageController {
     public String getPage() {
         return "redirect:/auth.html";
     }
+
+    @GetMapping("/tasks")
+    public String getTasksPage() {
+        return "tasks.html";
+    }
 }
