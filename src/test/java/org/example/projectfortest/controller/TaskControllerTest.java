@@ -2,6 +2,7 @@ package org.example.projectfortest.controller;
 
 import org.example.projectfortest.dto.UpdateTaskDTO;
 import org.example.projectfortest.entity.Task;
+import org.example.projectfortest.entity.enums.Priority;
 import org.example.projectfortest.service.TaskService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -104,5 +106,35 @@ public class TaskControllerTest {
                 .extracting(task -> ((Task) task).getTitle())
                 .containsExactlyInAnyOrder("Task 1", "Task 2");
         verify(taskService, times(1)).getAllTasks();
+    }
+
+    @Test
+    void filterTasksEndpoint_shouldReturnFilteredTasks() {
+        Task task = new Task();
+        task.setTitle("Task One");
+        when(taskService.filterTasks("one", null, null, null, null)).thenReturn(List.of(task));
+        ResponseEntity<?> response = taskController.filterTasks("one", null, null, null, null);
+        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+        List<?> body = (List<?>) response.getBody();
+        assertThat(body).hasSize(1);
+        assertThat(((Task) body.get(0)).getTitle()).isEqualTo("Task One");
+        verify(taskService, times(1)).filterTasks("one", null, null, null, null);
+    }
+
+    @Test
+    void sortTasksEndpoint_shouldReturnSortedTasks() {
+        Task task1 = new Task(); task1.setId(UUID.randomUUID()); task1.setPriority(Priority.HIGH);
+        Task task2 = new Task(); task2.setId(UUID.randomUUID()); task2.setPriority(Priority.LOW);
+        when(taskService.getTaskById(task1.getId())).thenReturn(Optional.of(task1));
+        when(taskService.getTaskById(task2.getId())).thenReturn(Optional.of(task2));
+        when(taskService.sortTasks(List.of(task1, task2), "priority", true)).thenReturn(List.of(task2, task1));
+        ResponseEntity<?> response = taskController.sortTasks(
+                List.of(task1.getId(), task2.getId()), "priority", true
+        );
+        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+        List<?> body = (List<?>) response.getBody();
+        assertThat(((Task) body.get(0)).getPriority()).isEqualTo(Priority.LOW);
+        assertThat(((Task) body.get(1)).getPriority()).isEqualTo(Priority.HIGH);
+        verify(taskService, times(1)).sortTasks(List.of(task1, task2), "priority", true);
     }
 }

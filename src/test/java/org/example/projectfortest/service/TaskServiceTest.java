@@ -3,6 +3,9 @@ package org.example.projectfortest.service;
 import org.example.projectfortest.dto.UpdateTaskDTO;
 import org.example.projectfortest.entity.Task;
 import org.example.projectfortest.entity.User;
+import org.example.projectfortest.entity.enums.Category;
+import org.example.projectfortest.entity.enums.Priority;
+import org.example.projectfortest.entity.enums.TaskStatus;
 import org.example.projectfortest.repository.TaskRepository;
 import org.example.projectfortest.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +18,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -163,14 +167,57 @@ class TaskServiceTest {
         task1.setUser(user);
         Task task2 = new Task();
         task2.setUser(user);
-
         when(taskRepository.findByUser(user)).thenReturn(List.of(task1, task2));
-
         List<Task> tasks = taskService.getAllTasks();
-
         assertThat(tasks).hasSize(2);
         assertThat(tasks).contains(task1, task2);
-
         verify(taskRepository, times(1)).findByUser(user);
+    }
+
+
+    @Test
+    void filterTasks_shouldFilterCorrectly() {
+        Task task1 = new Task();
+        task1.setTitle("Task One");
+        task1.setDescription("Important task");
+        task1.setCategory(Category.WORK);
+        task1.setPriority(Priority.HIGH);
+        task1.setStatus(TaskStatus.CREATED);
+        task1.setUser(user);
+        task1.setDueDate(LocalDateTime.now().minusDays(1));
+        Task task2 = new Task();
+        task2.setTitle("Task Two");
+        task2.setDescription("Another task");
+        task2.setCategory(Category.PERSONAL);
+        task2.setPriority(Priority.LOW);
+        task2.setStatus(TaskStatus.DONE);
+        task2.setUser(user);
+        task2.setDueDate(LocalDateTime.now().plusDays(1));
+        when(taskRepository.findByUser(user)).thenReturn(List.of(task1, task2));
+        List<Task> filteredTasks = taskService.filterTasks(
+                "one", Category.WORK, Priority.HIGH, TaskStatus.CREATED, true
+        );
+        assertThat(filteredTasks).hasSize(1);
+        assertThat(filteredTasks.get(0)).isEqualTo(task1);
+    }
+
+    @Test
+    void sortTasks_shouldSortByDueDateAscending() {
+        Task task1 = new Task(); task1.setDueDate(LocalDateTime.now().plusDays(3));
+        Task task2 = new Task(); task2.setDueDate(LocalDateTime.now().plusDays(1));
+        Task task3 = new Task(); task3.setDueDate(LocalDateTime.now().plusDays(2));
+        List<Task> tasks = new ArrayList<>(List.of(task1, task2, task3));
+        List<Task> sorted = taskService.sortTasks(tasks, "dueDate", true);
+        assertThat(sorted).containsExactly(task2, task3, task1);
+    }
+
+    @Test
+    void sortTasks_shouldSortByPriorityDescending() {
+        Task task1 = new Task(); task1.setPriority(Priority.LOW);
+        Task task2 = new Task(); task2.setPriority(Priority.HIGH);
+        Task task3 = new Task(); task3.setPriority(Priority.MEDIUM);
+        List<Task> tasks = new ArrayList<>(List.of(task1, task2, task3));
+        List<Task> sorted = taskService.sortTasks(tasks, "priority", false);
+        assertThat(sorted).containsExactly(task2, task3, task1);
     }
 }

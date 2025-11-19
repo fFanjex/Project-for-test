@@ -12,8 +12,23 @@
 <div class="container" id="tasks-container">
   <h2>Мои задачи</h2>
 
+  <div class="controls-panel">
+    <button id="create-task-btn" class="btn-primary">Создать задачу</button>
+    <button id="filter-tasks-btn" class="btn-secondary">Фильтровать задачи</button>
+    <button id="sort-tasks-btn" class="btn-secondary">Сортировать задачи</button>
+  </div>
 
-  <button id="create-task-btn" class="btn-primary">Создать задачу</button>
+  <div id="active-filters" class="active-filters" style="display: none;">
+    <h4>Активные фильтры:</h4>
+    <div id="filters-list"></div>
+    <button id="clear-filters-btn" class="btn-small">Очистить все</button>
+  </div>
+
+  <div id="active-sort" class="active-sort" style="display: none;">
+    <h4>Сортировка:</h4>
+    <span id="sort-info"></span>
+    <button id="clear-sort-btn" class="btn-small">Сбросить</button>
+  </div>
 
   <div id="tasks-list">
 
@@ -106,6 +121,92 @@
       <div class="form-actions">
         <button type="button" id="cancel-edit-btn" class="btn-secondary">Отмена</button>
         <button type="submit" class="btn-primary">Сохранить изменения</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="filter-modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Фильтровать задачи</h3>
+      <span class="close">&times;</span>
+    </div>
+    <form id="filter-form">
+      <div class="form-group">
+        <label for="filter-keyword">Поиск по названию и описанию</label>
+        <input type="text" id="filter-keyword" placeholder="Введите ключевые слова...">
+      </div>
+      <div class="form-group">
+        <label for="filter-category">Категория</label>
+        <select id="filter-category">
+          <option value="">Все категории</option>
+          <option value="WORK">Работа</option>
+          <option value="PERSONAL">Личное</option>
+          <option value="HEALTH">Здоровье</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="filter-priority">Приоритет</label>
+        <select id="filter-priority">
+          <option value="">Все приоритеты</option>
+          <option value="LOW">Низкий</option>
+          <option value="MEDIUM">Средний</option>
+          <option value="HIGH">Высокий</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="filter-status">Статус</label>
+        <select id="filter-status">
+          <option value="">Все статусы</option>
+          <option value="CREATED">Создана</option>
+          <option value="TODO">К выполнению</option>
+          <option value="IN_PROGRESS">В работе</option>
+          <option value="DONE">Выполнено</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="checkbox-label">
+          <input type="checkbox" id="filter-overdue">
+          <span>Только просроченные задачи</span>
+        </label>
+      </div>
+      <div class="form-actions">
+        <button type="button" id="cancel-filter-btn" class="btn-secondary">Отмена</button>
+        <button type="submit" class="btn-primary">Применить фильтры</button>
+        <button type="button" id="reset-filter-btn" class="btn-secondary">Сбросить</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="sort-modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Сортировать задачи</h3>
+      <span class="close">&times;</span>
+    </div>
+    <form id="sort-form">
+      <div class="form-group">
+        <label for="sort-by">Сортировать по</label>
+        <select id="sort-by">
+          <option value="createdAt">Дата создания</option>
+          <option value="dueDate">Срок выполнения</option>
+          <option value="title">Название</option>
+          <option value="priority">Приоритет</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="sort-order">Порядок сортировки</label>
+        <select id="sort-order">
+          <option value="false">По убыванию (новые сначала)</option>
+          <option value="true">По возрастанию (старые сначала)</option>
+        </select>
+      </div>
+      <div class="form-actions">
+        <button type="button" id="cancel-sort-btn" class="btn-secondary">Отмена</button>
+        <button type="submit" class="btn-primary">Применить сортировку</button>
+        <button type="button" id="reset-sort-btn" class="btn-secondary">Сбросить</button>
       </div>
     </form>
   </div>
