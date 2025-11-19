@@ -12,13 +12,103 @@
 <div class="container" id="tasks-container">
   <h2>Мои задачи</h2>
 
+
+  <button id="create-task-btn" class="btn-primary">Создать задачу</button>
+
   <div id="tasks-list">
-    <!-- Здесь будут отображаться задачи -->
+
   </div>
 
-  <button id="logout-btn">Выйти</button>
+  <button id="logout-btn" class="btn-secondary">Выйти</button>
 
   <div class="message" id="message"></div>
+</div>
+
+<div id="create-task-modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Создать новую задачу</h3>
+      <span class="close">&times;</span>
+    </div>
+    <form id="add-task-form">
+      <div class="form-group">
+        <label for="task-title">Название задачи *</label>
+        <input type="text" id="task-title" placeholder="Введите название задачи" required>
+      </div>
+      <div class="form-group">
+        <label for="task-description">Описание задачи</label>
+        <textarea id="task-description" placeholder="Введите описание задачи" rows="3"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="task-dueDate">Срок выполнения</label>
+        <input type="date" id="task-dueDate">
+      </div>
+      <div class="form-group">
+        <label for="task-priority">Приоритет</label>
+        <select id="task-priority">
+          <option value="LOW">Низкий</option>
+          <option value="MEDIUM" selected>Средний</option>
+          <option value="HIGH">Высокий</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="task-category">Категория</label>
+        <select id="task-category">
+          <option value="WORK">Работа</option>
+          <option value="PERSONAL" selected>Личное</option>
+          <option value="HEALTH">Здоровье</option>
+        </select>
+      </div>
+      <div class="form-actions">
+        <button type="button" id="cancel-create-btn" class="btn-secondary">Отмена</button>
+        <button type="submit" class="btn-primary">Создать задачу</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="edit-task-modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Редактировать задачу</h3>
+      <span class="close">&times;</span>
+    </div>
+    <form id="edit-task-form">
+      <input type="hidden" id="edit-task-id">
+      <div class="form-group">
+        <label for="edit-task-title">Название задачи *</label>
+        <input type="text" id="edit-task-title" placeholder="Введите название задачи" required>
+      </div>
+      <div class="form-group">
+        <label for="edit-task-description">Описание задачи</label>
+        <textarea id="edit-task-description" placeholder="Введите описание задачи" rows="3"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="edit-task-dueDate">Срок выполнения</label>
+        <input type="date" id="edit-task-dueDate">
+      </div>
+      <div class="form-group">
+        <label for="edit-task-priority">Приоритет</label>
+        <select id="edit-task-priority">
+          <option value="LOW">Низкий</option>
+          <option value="MEDIUM">Средний</option>
+          <option value="HIGH">Высокий</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="edit-task-category">Категория</label>
+        <select id="edit-task-category">
+          <option value="WORK">Работа</option>
+          <option value="PERSONAL">Личное</option>
+          <option value="HEALTH">Здоровье</option>
+        </select>
+      </div>
+      <div class="form-actions">
+        <button type="button" id="cancel-edit-btn" class="btn-secondary">Отмена</button>
+        <button type="submit" class="btn-primary">Сохранить изменения</button>
+      </div>
+    </form>
+  </div>
 </div>
 
 <script src="/js/tasks.js"></script>
